@@ -1,0 +1,23 @@
+{
+  "415bf70f-810c-442e-b9e8-bdcc8636d586": {
+    "id": "415bf70f-810c-442e-b9e8-bdcc8636d586",
+    "username": "john25",
+    "name": "John",
+    "surname": "Doe",
+    "age": 25
+  },
+  "0e5c1643-57ef-4d8e-9138-40c48792edf3": {
+    "id": "0e5c1643-57ef-4d8e-9138-40c48792edf3",
+    "username": "bob37",
+    "name": "Bob",
+    "surname": "Miles",
+    "age": 37
+  },
+  "4635636e-2b52-4000-a84e-faf9a8aced26": {
+    "id": "4635636e-2b52-4000-a84e-faf9a8aced26",
+    "username": "alice19",
+    "name": "Alice",
+    "surname": "Parker",
+    "age": 19
+  }
+}
