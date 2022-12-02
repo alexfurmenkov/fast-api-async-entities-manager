@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from models import User
+from request_schemas import UserRequestSchema
 from services.database import read_item, save_item, delete_item
 
 
@@ -8,7 +8,7 @@ users_router = APIRouter(prefix="/users")
 
 
 @users_router.post("/")
-async def create_user(user: User):
+async def create_user(user: UserRequestSchema):
     save_item(user.dict())
     return {"message": f"User with id {user.id} has been created"}
 
@@ -20,7 +20,7 @@ async def get_user(user_id: str) -> dict:
 
 
 @users_router.put("/{user_id}")
-async def update_user(user_id: str, user: User):
+async def update_user(user_id: str, user: UserRequestSchema):
     save_item(user.dict())
     return {"message": f"User with id {user_id} has been updated"}
 
