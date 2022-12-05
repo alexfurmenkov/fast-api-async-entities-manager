@@ -7,11 +7,12 @@ from database.db_models import UserDBModel
 
 
 class UsersDBManager:
-
     def __init__(self, db_session: Session):
         self._db_session = db_session
 
-    async def create(self, username: str, name: str, surname: str, age: Optional[int]) -> UserDBModel:
+    async def create(
+        self, username: str, name: str, surname: str, age: Optional[int]
+    ) -> UserDBModel:
         new_user = UserDBModel(username, name, surname, age)
         self._db_session.add(new_user)
         await self._db_session.flush()
