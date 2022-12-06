@@ -15,7 +15,10 @@ async def create_user(
     new_user: UserDBModel = await users_manager.create(
         user.username, user.name, user.surname, user.age
     )
-    return {"message": f"User with id {new_user.id} has been created"}
+    return {
+        "message": "User has been created successfully",
+        "user": new_user,
+    }
 
 
 @users_router.get("/{user_id}")
@@ -23,7 +26,7 @@ async def get_user(
     user_id: str, users_manager: UsersDBManager = Depends(get_users_manager)
 ) -> dict:
     user: UserDBModel = await users_manager.get(user_id)
-    return {"user": user}
+    return user
 
 
 @users_router.put("/{user_id}")

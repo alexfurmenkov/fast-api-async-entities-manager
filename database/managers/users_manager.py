@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional, List
 
 from sqlalchemy import select, update, delete
@@ -13,15 +14,13 @@ class UsersDBManager:
     async def create(
         self, username: str, name: str, surname: str, age: Optional[int]
     ) -> UserDBModel:
-        new_user = UserDBModel(username, name, surname, age)
+        new_user = UserDBModel(id=str(uuid.uuid4()), username=username, name=name, surname=surname, age=age)
         self._db_session.add(new_user)
         await self._db_session.flush()
         return new_user
 
     async def get(self, user_id: str) -> UserDBModel:
-        query = select(UserDBModel).where(UserDBModel.id == user_id)
-        result = await self._db_session.execute(query)
-        return result.scalars().all()
+        return await self._db_session.get(UserDBModel, user_id)
 
     async def list(self) -> List[UserDBModel]:
         query = await self._db_session.execute(select(UserDBModel))
