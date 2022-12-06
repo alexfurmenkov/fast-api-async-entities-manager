@@ -17,7 +17,7 @@ async def create_user(
     )
     return {
         "message": "User has been created successfully",
-        "user": new_user,
+        "new_user": new_user,
     }
 
 
