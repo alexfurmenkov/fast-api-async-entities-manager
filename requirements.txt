@@ -3,4 +3,5 @@ uvicorn
 SQLAlchemy
 aiosqlite
 asyncpg
+alembic
 python-dotenv
