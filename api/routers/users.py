@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
@@ -24,11 +22,13 @@ async def create_user(
             request_body.surname,
             request_body.age,
         )
-    except IntegrityError as e:
-        logging.error(e)
+    except IntegrityError:
         raise HTTPException(
             status_code=400,
-            detail=f"User with username {request_body.username} already exists",
+            detail={
+                "message": "User with given username already exists",
+                "username": request_body.username,
+            },
         )
     return {
         "message": "User has been created successfully",
@@ -50,7 +50,16 @@ async def update_user(
     users_manager: UsersDBManager = Depends(get_users_manager),
     existing_user: UserDBModel = Depends(ensure_existing_user),
 ) -> dict:
-    await users_manager.update(user_id, **request_body.dict())
+    try:
+        await users_manager.update(user_id, **request_body.dict())
+    except IntegrityError:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Can't set username because it is occupied by another user",
+                "username": request_body.username,
+            },
+        )
     return {"message": f"User with id {user_id} has been updated"}
 
 
