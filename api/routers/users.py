@@ -3,10 +3,10 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from api.request_schemas import UserRequestSchema
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
-from request_schemas import UserRequestSchema
-from routers.dependencies import get_users_manager, ensure_existing_user
+from .dependencies import get_users_manager, ensure_existing_user
 
 users_router = APIRouter(prefix="/users")
 
