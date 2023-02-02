@@ -19,7 +19,7 @@ class UsersDBManager:
         await self._db_session.flush()
         return new_user
 
-    async def get(self, user_id: str) -> UserDBModel:
+    async def get(self, user_id: str) -> Optional[UserDBModel]:
         return await self._db_session.get(UserDBModel, user_id)
 
     async def list(self) -> List[UserDBModel]:
