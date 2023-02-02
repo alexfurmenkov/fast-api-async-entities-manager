@@ -13,16 +13,21 @@ users_router = APIRouter(prefix="/users")
 
 @users_router.post("/")
 async def create_user(
-    user: UserRequestSchema, users_manager: UsersDBManager = Depends(get_users_manager)
+    request_body: UserRequestSchema,
+    users_manager: UsersDBManager = Depends(get_users_manager),
 ) -> dict:
     try:
         new_user: UserDBModel = await users_manager.create(
-            user.username, user.name, user.surname, user.age
+            request_body.username,
+            request_body.name,
+            request_body.surname,
+            request_body.age,
         )
     except IntegrityError as e:
         logging.error(e)
         raise HTTPException(
-            status_code=400, detail=f"User with username {user.username} already exists"
+            status_code=400,
+            detail=f"User with username {request_body.username} already exists",
         )
     return {
         "message": "User has been created successfully",
@@ -40,11 +45,11 @@ async def get_user(
 @users_router.put("/{user_id}")
 async def update_user(
     user_id: str,
-    user: UserRequestSchema,
+    request_body: UserRequestSchema,
     users_manager: UsersDBManager = Depends(get_users_manager),
     existing_user: UserDBModel = Depends(ensure_existing_user),
 ) -> dict:
-    await users_manager.update(user_id, **user.dict())
+    await users_manager.update(user_id, **request_body.dict())
     return {"message": f"User with id {user_id} has been updated"}
 
 
