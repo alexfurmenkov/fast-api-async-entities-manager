@@ -6,7 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from api.request_schemas import UserRequestSchema
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
-from .dependencies import get_users_manager, ensure_existing_user
+
+from .dependencies import ensure_existing_user, get_users_manager
 
 users_router = APIRouter(prefix="/users")
 

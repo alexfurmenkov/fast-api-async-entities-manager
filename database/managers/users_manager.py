@@ -1,7 +1,7 @@
 import uuid
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from database.db_models import UserDBModel
@@ -14,7 +14,9 @@ class UsersDBManager:
     async def create(
         self, username: str, name: str, surname: str, age: Optional[int]
     ) -> UserDBModel:
-        new_user = UserDBModel(id=str(uuid.uuid4()), username=username, name=name, surname=surname, age=age)
+        new_user = UserDBModel(
+            id=str(uuid.uuid4()), username=username, name=name, surname=surname, age=age
+        )
         self._db_session.add(new_user)
         await self._db_session.flush()
         return new_user
