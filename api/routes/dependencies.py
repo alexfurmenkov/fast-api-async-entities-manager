@@ -6,6 +6,10 @@ from database.managers import UsersDBManager
 
 
 async def get_users_manager() -> UsersDBManager:
+    """
+    Yields an instance of UsersDBManager.
+    :return: UsersDBManager
+    """
     async with async_db_session() as session:
         async with session.begin():
             yield UsersDBManager(session)
@@ -14,6 +18,13 @@ async def get_users_manager() -> UsersDBManager:
 async def ensure_existing_user(
     user_id: str, users_manager: UsersDBManager = Depends(get_users_manager)
 ):
+    """
+    Checks that the users exists in the database.
+    Returns HTTP 400 response if not.
+    :param user_id: str
+    :param users_manager: UsersDBManager
+    :return: None
+    """
     user: UserDBModel = await users_manager.get(user_id)
     if not user:
         raise HTTPException(
