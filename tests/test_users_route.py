@@ -1,7 +1,13 @@
 import json
 
+import pytest
+from httpx import AsyncClient
 
-def test_create_new_user(client):
+from database.db_models import UserDBModel
+
+
+@pytest.mark.asyncio
+async def test_create_new_user(async_client: AsyncClient):
     """
     Integration test for POST /users endpoint
     """
@@ -11,7 +17,7 @@ def test_create_new_user(client):
         "surname": "Ivanov",
         "age": 33
     }
-    response = client.post("/users", data=json.dumps(user_to_create))
+    response = await async_client.post("/users/", data=json.dumps(user_to_create))
 
     # check response body
     assert response.status_code == 200
@@ -24,7 +30,7 @@ def test_create_new_user(client):
         assert new_user[key] == value
 
     # delete created user
-    client.delete(f"/users/{new_user['id']}")
+    await async_client.delete(f"/users/{new_user['id']}")
 
 
 def test_create_new_user_invalid_body():
@@ -34,12 +40,21 @@ def test_create_new_user_invalid_body():
     """
 
 
-def test_create_new_user_username_exists():
+@pytest.mark.asyncio
+async def test_create_new_user_username_exists(async_client, db_user: UserDBModel):
     """
     Integration test for POST /users endpoint.
     Checks the case when a user with
     given username already exists.
     """
+    request_body: dict = {
+        "username": db_user.username,
+        "name": db_user.name,
+        "surname": db_user.surname,
+        "age": db_user.age
+    }
+    response = await async_client.post("/users/", data=json.dumps(request_body))
+    assert response.status_code == 400
 
 
 def test_get_user_by_id():

@@ -19,6 +19,7 @@ class UsersDBManager:
         )
         self._db_session.add(new_user)
         await self._db_session.flush()
+        await self._db_session.commit()
         return new_user
 
     async def get(self, user_id: str) -> Optional[UserDBModel]:

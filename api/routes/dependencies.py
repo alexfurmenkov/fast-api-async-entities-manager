@@ -1,3 +1,5 @@
+from typing import AsyncGenerator
+
 from fastapi import Depends, HTTPException
 
 from database import async_db_session
@@ -5,10 +7,10 @@ from database.db_models import UserDBModel
 from database.managers import UsersDBManager
 
 
-async def get_users_manager() -> UsersDBManager:
+async def get_users_manager() -> AsyncGenerator:
     """
     Yields an instance of UsersDBManager.
-    :return: UsersDBManager
+    :return: AsyncGenerator
     """
     async with async_db_session() as session:
         async with session.begin():
