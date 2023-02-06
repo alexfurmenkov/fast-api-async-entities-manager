@@ -1,4 +1,5 @@
 import json
+import uuid
 
 import pytest
 from httpx import AsyncClient
@@ -33,15 +34,35 @@ async def test_create_new_user(async_client: AsyncClient):
     await async_client.delete(f"/users/{new_user['id']}")
 
 
-def test_create_new_user_invalid_body():
+@pytest.mark.asyncio
+async def test_create_new_user_invalid_body(async_client: AsyncClient):
     """
     Integration test for POST /users endpoint.
     Checks the case when request body is invalid.
     """
+    request_body: dict = {
+        "username": "username",
+        "name": "name",
+        "surname": [{"key": "value"}],
+    }
+    response = await async_client.post("/users/", data=json.dumps(request_body))
+    assert response.status_code == 422
+    response_body: dict = response.json()
+    assert response_body == {
+        "detail": [
+            {
+                "loc": ["body", "surname"],
+                "msg": "str type expected",
+                "type": "type_error.str",
+            }
+        ]
+    }
 
 
 @pytest.mark.asyncio
-async def test_create_new_user_username_exists(async_client, db_user: UserDBModel):
+async def test_create_new_user_username_exists(
+    async_client: AsyncClient, db_user: UserDBModel
+):
     """
     Integration test for POST /users endpoint.
     Checks the case when a user with
@@ -65,33 +86,66 @@ async def test_create_new_user_username_exists(async_client, db_user: UserDBMode
     }
 
 
-def test_get_user_by_id():
+@pytest.mark.asyncio
+async def test_get_user_by_id(async_client: AsyncClient, db_user: UserDBModel):
     """
     Integration test for GET /users/{user_id} endpoint
     """
+    response = await async_client.get(f"/users/{db_user.id}")
+    assert response.status_code == 200
+    response_body: dict = response.json()
+    assert response_body == {
+        "id": db_user.id,
+        "username": db_user.username,
+        "name": db_user.name,
+        "surname": db_user.surname,
+        "age": db_user.age,
+    }
 
 
-def test_get_user_by_id_not_found():
+@pytest.mark.asyncio
+async def test_get_user_by_id_not_found(async_client: AsyncClient):
     """
     Integration test for GET /users/{user_id} endpoint.
     Checks the case when a user is not found.
     """
+    user_id: str = str(uuid.uuid4())
+    response = await async_client.get(f"/users/{user_id}")
+    assert response.status_code == 404
+    response_body: dict = response.json()
+    assert response_body == {
+        "detail": {
+            "message": "User is not found",
+            "user_id": user_id,
+        }
+    }
 
 
-def test_update_user():
+@pytest.mark.asyncio
+async def test_update_user():
     """
     Integration test for PUT /users/{user_id} endpoint.
     """
 
 
-def test_update_user_invalid_body():
+@pytest.mark.asyncio
+async def test_update_user_invalid_body():
     """
     Integration test for PUT /users/{user_id} endpoint.
     Checks the case when request body is invalid.
     """
 
 
-def test_update_user_username_exists():
+@pytest.mark.asyncio
+async def test_update_user_not_found():
+    """
+    Integration test for PUT /users/{user_id} endpoint.
+    Checks the case when requested user is not found.
+    """
+
+
+@pytest.mark.asyncio
+async def test_update_user_username_exists():
     """
     Integration test for PUT /users/{user_id} endpoint.
     Checks the case when a user with
@@ -99,13 +153,15 @@ def test_update_user_username_exists():
     """
 
 
-def test_delete_user():
+@pytest.mark.asyncio
+async def test_delete_user():
     """
     Integration test for DELETE /users/{user_id} endpoint
     """
 
 
-def test_delete_user_not_found():
+@pytest.mark.asyncio
+async def test_delete_user_not_found():
     """
     Integration test for DELETE /users/{user_id} endpoint.
     Checks the case when a user is not found.

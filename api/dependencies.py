@@ -30,6 +30,10 @@ async def ensure_existing_user(
     user: UserDBModel = await users_manager.get(user_id)
     if not user:
         raise HTTPException(
-            status_code=404, detail=f"User with id {user_id} is not found"
+            status_code=404,
+            detail={
+                "message": "User is not found",
+                "user_id": user_id,
+            }
         )
     return user
