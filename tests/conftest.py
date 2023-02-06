@@ -4,13 +4,13 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-from api.routes.dependencies import get_users_manager
+from api.dependencies import get_users_manager
 from app import app
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.yield_fixture(scope="session")
 def event_loop(request):
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()

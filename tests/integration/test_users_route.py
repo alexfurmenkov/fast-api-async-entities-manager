@@ -15,7 +15,7 @@ async def test_create_new_user(async_client: AsyncClient):
         "username": "iivanov",
         "name": "Ivan",
         "surname": "Ivanov",
-        "age": 33
+        "age": 33,
     }
     response = await async_client.post("/users/", data=json.dumps(user_to_create))
 
@@ -51,7 +51,7 @@ async def test_create_new_user_username_exists(async_client, db_user: UserDBMode
         "username": db_user.username,
         "name": db_user.name,
         "surname": db_user.surname,
-        "age": db_user.age
+        "age": db_user.age,
     }
     response = await async_client.post("/users/", data=json.dumps(request_body))
 
