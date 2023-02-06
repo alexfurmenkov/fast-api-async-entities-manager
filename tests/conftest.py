@@ -25,13 +25,14 @@ async def async_client() -> AsyncClient:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def db_user(request) -> UserDBModel:
-    gen = get_users_manager()
-    manager: UsersDBManager = await anext(gen)
+async def db_user() -> UserDBModel:
+    generator = get_users_manager()
+    manager: UsersDBManager = await anext(generator)
     user: UserDBModel = await manager.create("username", "name", "surname", 32)
 
-    async def cleanup():  # TODO fix finalizer
-        await manager.delete(user.id)
-    request.addfinalizer(cleanup)
+    yield user
 
-    return user
+    # create a new manager to start a new DB session
+    new_generator = get_users_manager()
+    new_manager: UsersDBManager = await anext(new_generator)
+    await new_manager.delete(user.id)

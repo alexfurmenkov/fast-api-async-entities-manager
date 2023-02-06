@@ -18,8 +18,7 @@ class UsersDBManager:
             id=str(uuid.uuid4()), username=username, name=name, surname=surname, age=age
         )
         self._db_session.add(new_user)
-        await self._db_session.flush()
-        await self._db_session.commit()
+        await self.__commit_to_db()
         return new_user
 
     async def get(self, user_id: str) -> Optional[UserDBModel]:
@@ -37,3 +36,8 @@ class UsersDBManager:
     async def delete(self, user_id: str):
         query = delete(UserDBModel).where(UserDBModel.id == user_id)
         await self._db_session.execute(query)
+        await self.__commit_to_db()
+
+    async def __commit_to_db(self):
+        await self._db_session.flush()
+        await self._db_session.commit()

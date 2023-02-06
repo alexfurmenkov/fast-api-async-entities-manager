@@ -54,7 +54,15 @@ async def test_create_new_user_username_exists(async_client, db_user: UserDBMode
         "age": db_user.age
     }
     response = await async_client.post("/users/", data=json.dumps(request_body))
+
     assert response.status_code == 400
+    response_body: dict = response.json()
+    assert response_body == {
+        "detail": {
+            "message": "User with given username already exists",
+            "username": db_user.username,
+        }
+    }
 
 
 def test_get_user_by_id():
