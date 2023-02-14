@@ -1,5 +1,6 @@
-from .user import UserRequestSchema
+from .users import CreateUserRequestSchema, UpdateUserRequestSchema
 
 __all__ = [
-    "UserRequestSchema",
+    "CreateUserRequestSchema",
+    "UpdateUserRequestSchema",
 ]

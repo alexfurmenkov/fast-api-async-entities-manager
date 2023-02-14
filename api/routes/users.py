@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from api.dependencies import ensure_existing_user, get_users_manager
-from api.request_schemas import UserRequestSchema
+from api.request_schemas import CreateUserRequestSchema, UpdateUserRequestSchema
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
 
@@ -11,7 +11,7 @@ users_router = APIRouter(prefix="/users")
 
 @users_router.post("/")
 async def create_user(
-    request_body: UserRequestSchema,
+    request_body: CreateUserRequestSchema,
     users_manager: UsersDBManager = Depends(get_users_manager),
 ) -> dict:
     try:
@@ -45,7 +45,7 @@ async def get_user(
 @users_router.put("/{user_id}")
 async def update_user(
     user_id: str,
-    request_body: UserRequestSchema,
+    request_body: UpdateUserRequestSchema,
     users_manager: UsersDBManager = Depends(get_users_manager),
     existing_user: UserDBModel = Depends(ensure_existing_user),
 ) -> dict:
@@ -59,7 +59,10 @@ async def update_user(
                 "username": request_body.username,
             },
         )
-    return {"message": f"User with id {user_id} has been updated"}
+    return {
+        "message": f"User has been updated successfully",
+        "user_id": user_id,
+    }
 
 
 @users_router.delete("/{user_id}")

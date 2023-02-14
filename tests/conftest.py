@@ -36,3 +36,17 @@ async def db_user() -> UserDBModel:
     new_generator = get_users_manager()
     new_manager: UsersDBManager = await anext(new_generator)
     await new_manager.delete(user.id)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def db_user_1() -> UserDBModel:
+    generator = get_users_manager()
+    manager: UsersDBManager = await anext(generator)
+    user: UserDBModel = await manager.create("new username", "new name", "new surname", 28)
+
+    yield user
+
+    # create a new manager to start a new DB session
+    new_generator = get_users_manager()
+    new_manager: UsersDBManager = await anext(new_generator)
+    await new_manager.delete(user.id)

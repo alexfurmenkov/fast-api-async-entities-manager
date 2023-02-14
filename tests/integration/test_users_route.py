@@ -122,35 +122,119 @@ async def test_get_user_by_id_not_found(async_client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_update_user():
+async def test_update_user(async_client: AsyncClient, db_user: UserDBModel):
     """
     Integration test for PUT /users/{user_id} endpoint.
     """
+    request_body: dict = {
+        "name": "new name",
+        "age": 31,
+    }
+
+    # update a user
+    update_response = await async_client.put(
+        f"/users/{db_user.id}", data=json.dumps(request_body)
+    )
+    assert update_response.status_code == 200
+    assert update_response.json() == {
+        "message": f"User has been updated successfully",
+        "user_id": db_user.id,
+    }
+
+    # get updated user and check that it has been updated
+    get_response = await async_client.get(f"/users/{db_user.id}")
+    get_response_body: dict = get_response.json()
+    assert get_response_body["name"] == request_body["name"]
+    assert get_response_body["age"] == request_body["age"]
 
 
 @pytest.mark.asyncio
-async def test_update_user_invalid_body():
+@pytest.mark.parametrize(
+    "request_body, response_body",
+    [
+        (
+            {},
+            [
+                {
+                    "loc": ["body", "__root__"],
+                    "msg": "one of username, name, surname or age must have a value",
+                    "type": "value_error",
+                }
+            ],
+        ),
+        (
+            {"name": ["test new name"]},
+            [
+                {
+                    "loc": ["body", "name"],
+                    "msg": "str type expected",
+                    "type": "type_error.str",
+                },
+                {
+                    "loc": ["body", "__root__"],
+                    "msg": "one of username, name, surname or age must have a value",
+                    "type": "value_error",
+                },
+            ],
+        ),
+    ],
+)
+async def test_update_user_invalid_body(
+    async_client: AsyncClient,
+    db_user: UserDBModel,
+    request_body: dict,
+    response_body: dict,
+):
     """
     Integration test for PUT /users/{user_id} endpoint.
     Checks the case when request body is invalid.
     """
+    response = await async_client.put(
+        f"/users/{db_user.id}", data=json.dumps(request_body)
+    )
+    assert response.status_code == 422
+    assert response.json() == {"detail": response_body}
 
 
 @pytest.mark.asyncio
-async def test_update_user_not_found():
+async def test_update_user_not_found(async_client: AsyncClient):
     """
     Integration test for PUT /users/{user_id} endpoint.
     Checks the case when requested user is not found.
     """
+    user_id: str = str(uuid.uuid4())
+    response = await async_client.put(f"/users/{user_id}", data=json.dumps({}))
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": {
+            "message": "User is not found",
+            "user_id": user_id,
+        }
+    }
 
 
 @pytest.mark.asyncio
-async def test_update_user_username_exists():
+async def test_update_user_username_exists(
+    async_client: AsyncClient, db_user: UserDBModel, db_user_1: UserDBModel
+):
     """
     Integration test for PUT /users/{user_id} endpoint.
     Checks the case when a user with
     given username already exists.
     """
+    request_body: dict = {
+        "username": db_user_1.username,
+    }
+    response = await async_client.put(
+        f"/users/{db_user.id}", data=json.dumps(request_body)
+    )
+    assert response.status_code == 400
+    assert response.json() == {
+        "detail": {
+            "message": "Can't set username because it is occupied by another user",
+            "username": request_body["username"],
+        }
+    }
 
 
 @pytest.mark.asyncio
