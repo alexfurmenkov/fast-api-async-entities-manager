@@ -238,15 +238,43 @@ async def test_update_user_username_exists(
 
 
 @pytest.mark.asyncio
-async def test_delete_user():
+async def test_delete_user(async_client: AsyncClient):
     """
     Integration test for DELETE /users/{user_id} endpoint
     """
+    # create a new user
+    user_to_create: dict = {
+        "username": "iivanov",
+        "name": "Ivan",
+        "surname": "Ivanov",
+        "age": 33,
+    }
+    create_response = await async_client.post(
+        "/users/", data=json.dumps(user_to_create)
+    )
+
+    # call the delete endpoint
+    user_id: str = create_response.json()["new_user"]["id"]
+    delete_response = await async_client.delete(f"/users/{user_id}")
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {
+        "message": "User has been deleted",
+        "user_id": user_id,
+    }
 
 
 @pytest.mark.asyncio
-async def test_delete_user_not_found():
+async def test_delete_user_not_found(async_client: AsyncClient):
     """
     Integration test for DELETE /users/{user_id} endpoint.
     Checks the case when a user is not found.
     """
+    user_id: str = str(uuid.uuid4())
+    response = await async_client.delete(f"/users/{user_id}")
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": {
+            "message": "User is not found",
+            "user_id": user_id,
+        }
+    }

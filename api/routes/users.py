@@ -72,4 +72,7 @@ async def delete_user(
     existing_user: UserDBModel = Depends(ensure_existing_user),
 ) -> dict:
     await users_manager.delete(user_id)
-    return {"message": f"User with id {user_id} has been deleted"}
+    return {
+        "message": "User has been deleted",
+        "user_id": user_id,
+    }

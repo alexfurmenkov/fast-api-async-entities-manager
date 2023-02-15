@@ -42,7 +42,9 @@ async def db_user() -> UserDBModel:
 async def db_user_1() -> UserDBModel:
     generator = get_users_manager()
     manager: UsersDBManager = await anext(generator)
-    user: UserDBModel = await manager.create("new username", "new name", "new surname", 28)
+    user: UserDBModel = await manager.create(
+        "new username", "new name", "new surname", 28
+    )
 
     yield user
 

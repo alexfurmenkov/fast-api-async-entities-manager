@@ -34,6 +34,6 @@ async def ensure_existing_user(
             detail={
                 "message": "User is not found",
                 "user_id": user_id,
-            }
+            },
         )
     return user
