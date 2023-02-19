@@ -5,6 +5,7 @@ from pydantic import BaseModel, root_validator
 
 class CreateUserRequestSchema(BaseModel):
     username: str
+    password: str
     name: str
     surname: str
     age: Optional[int]

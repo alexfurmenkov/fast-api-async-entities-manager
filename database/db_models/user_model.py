@@ -9,6 +9,7 @@ class UserDBModel(BaseModel):
 
     id = Column(String, primary_key=True)
     username = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     age = Column(Integer, nullable=True)

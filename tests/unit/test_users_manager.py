@@ -17,9 +17,7 @@ async def test_create():
     name: str = "name"
     surname: str = "surname"
     age: int = 25
-    await manager.create(
-        username, name, surname, age
-    )
+    await manager.create(username, name, surname, age)
 
     user: UserDBModel = session_mock.add.call_args[0][0]
     assert user.username == username
