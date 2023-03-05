@@ -3,21 +3,22 @@ from sqlalchemy.exc import IntegrityError
 
 from api.dependencies import ensure_existing_user, get_users_manager, validate_token
 from api.request_schemas import UpdateUserRequestSchema
+from api.response_schemas import DeletedUserResponse, UpdatedUserResponse, UserInfo
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
 
 users_router = APIRouter(prefix="/users", dependencies=[Depends(validate_token)])
 
 
-@users_router.get("/{user_id}")
+@users_router.get("/{user_id}", response_model=UserInfo)
 async def get_user(
     user_id: str,
     existing_user: UserDBModel = Depends(ensure_existing_user),
-) -> dict:
+) -> UserInfo:
     return existing_user
 
 
-@users_router.put("/{user_id}")
+@users_router.put("/{user_id}", response_model=UpdatedUserResponse)
 async def update_user(
     user_id: str,
     request_body: UpdateUserRequestSchema,
@@ -40,7 +41,7 @@ async def update_user(
     }
 
 
-@users_router.delete("/{user_id}")
+@users_router.delete("/{user_id}", response_model=DeletedUserResponse)
 async def delete_user(
     user_id: str,
     users_manager: UsersDBManager = Depends(get_users_manager),

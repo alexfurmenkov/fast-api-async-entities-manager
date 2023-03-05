@@ -4,19 +4,20 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.dependencies import (
+    PasswordManager,
     create_access_token,
     create_refresh_token,
     get_users_manager,
-    PasswordManager
 )
 from api.request_schemas import CreateUserRequestSchema
+from api.response_schemas import CreatedUserResponse, LoginResponse
 from database.db_models import UserDBModel
 from database.managers import UsersDBManager
 
 auth_router = APIRouter(prefix="/auth")
 
 
-@auth_router.post("/signup")
+@auth_router.post("/signup", response_model=CreatedUserResponse)
 async def create_user(
     request_body: CreateUserRequestSchema,
     users_manager: UsersDBManager = Depends(get_users_manager),
@@ -44,7 +45,7 @@ async def create_user(
     }
 
 
-@auth_router.post("/login")
+@auth_router.post("/login", response_model=LoginResponse)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     users_manager: UsersDBManager = Depends(get_users_manager),
