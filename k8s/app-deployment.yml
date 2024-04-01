@@ -13,7 +13,7 @@ spec:
         app: entities
     spec:
       containers:
-        - name: fastapi
+        - name: entities-app
           image: afurmenkov/entities:latest
           env:
             - name: DATABASE_URL
