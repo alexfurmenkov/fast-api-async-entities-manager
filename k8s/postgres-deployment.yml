@@ -6,7 +6,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres  # TODO mb entites?
+      app: postgres
   template:
     metadata:
       labels:

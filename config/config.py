@@ -11,4 +11,4 @@ class AppConfig(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
     REFRESH_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", 43800))  # one month
     JWT_SECRET_KEY: str = os.environ["JWT_SECRET_KEY"]
-    JWT_ALGORITHM: str = os.environ["JWT_ALGORITHM"]
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
