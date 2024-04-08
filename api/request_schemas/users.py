@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
 
 
 class CreateUserRequestSchema(BaseModel):
@@ -17,7 +17,7 @@ class UpdateUserRequestSchema(BaseModel):
     surname: Optional[str]
     age: Optional[int]
 
-    @root_validator
+    @model_validator(mode="before")
     def any_of(cls, values: dict):
         if not any(values.values()):
             raise ValueError("one of username, name, surname or age must have a value")

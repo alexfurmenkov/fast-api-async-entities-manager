@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entities-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: entities
+  template:
+    metadata:
+      labels:
+        app: entities
+    spec:
+      containers:
+        - name: entities-app
+          image: afurmenkov/entities:latest
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-url-secret
+                  key: DATABASE_URL
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+            - name: JWT_ALGORITHM
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_ALGORITHM
+          ports:
+            - containerPort: 8000
